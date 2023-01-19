@@ -23,21 +23,13 @@ import axios from "axios";
 import { useRoute } from "vue-router";
 import router from "@/router";
 import { useUserStore } from "../stores/useUserStore.js";
+
 const userStore = useUserStore();
-
 const user = ref({});
-
 const userId = useRoute().params.userId;
 
-onMounted(async () => {
-  try {
-    const response = await axios.get(
-      `https://jsonplaceholder.typicode.com/users/${userId}`
-    );
-    user.value = response.data;
-  } catch (error) {
-    console.log(error);
-  }
+onMounted(() => {
+  user.value = userStore.userData.find((u) => u.id === +userId);
 });
 
 const save = async () => {
@@ -47,7 +39,7 @@ const save = async () => {
       user.value
     );
     userStore.userData = userStore.userData.map((u) => {
-      if (u.id === user.value.id) {
+      if (u.id === +user.value.id) {
         return user.value;
       }
       return u;
