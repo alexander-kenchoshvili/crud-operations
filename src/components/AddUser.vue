@@ -16,7 +16,9 @@
       <div class="form-group">
         <label for="email">Email:</label>
         <input type="email" id="email" name="email" v-model="email" />
-        <span class="error-message" v-if="checkEmail">field is Required</span>
+        <span class="error-message" v-if="checkEmail">{{
+          email === "" ? "field is required" : "invalid email"
+        }}</span>
       </div>
       <button class="add-btn" @click.prevent="onSubmit" type="submit">
         Add User
@@ -40,14 +42,16 @@ const checkName = ref(false);
 const checkUsername = ref(false);
 const checkEmail = ref(false);
 
-const validForm = computed(() => name.value && username.value && email.value);
+const validForm = computed(() => {
+  const emailHasAt = email.value.includes("@");
+  return name.value && username.value && emailHasAt;
+});
 
 const invalidForm = () => {
   checkName.value = !name.value;
   checkUsername.value = !username.value;
-  checkEmail.value = !email.value;
+  checkEmail.value = !email.value.includes("@");
 };
-
 const onSubmit = async () => {
   invalidForm();
   if (validForm.value) {
@@ -69,7 +73,9 @@ watch(name, (newValue) => {
 watch(username, (newValue) => {
   checkUsername.value = newValue === "" ? true : false;
 });
+
 watch(email, (newValue) => {
+  checkEmail.value = !newValue.includes("@");
   checkEmail.value = newValue === "" ? true : false;
 });
 </script>
